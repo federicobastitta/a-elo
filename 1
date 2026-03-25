@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desarrollo del Aeródromo de Añelo</title>
+  <meta name="description" content="Anteproyecto de infraestructura estratégica para Vaca Muerta impulsado por Pacific Ocean S.A. y Alfa Sky." />
+  <style>
+    :root {
+      --bg: #0d1b36;
+      --bg-soft: #12264d;
+      --panel: rgba(255,255,255,0.08);
+      --panel-strong: rgba(255,255,255,0.12);
+      --text: #f3f6fb;
+      --muted: #bfd0ee;
+      --line: rgba(255,255,255,0.16);
+      --accent: #173791;
+      --accent-2: #4A7BD0;
+      --white: #ffffff;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(74,123,208,0.28), transparent 28%),
+        radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 18%),
+        linear-gradient(180deg, #0b1630 0%, #10224a 100%);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .shell {
+      width: min(100% - 32px, var(--max));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: rgba(8, 18, 40, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 72px;
+    }
+
+    .brand-stack {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand-chip {
+      padding: 9px 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav {
+      display: none;
+      gap: 22px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .nav a:hover { color: var(--white); }
+
+    .hero {
+      padding: 64px 0 26px;
+    }
+
+    .hero-grid {
+      display: grid;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .hero-copy,
+    .hero-side {
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -60px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74,123,208,0.28) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+      margin-bottom: 18px;
+      max-width: 10ch;
+    }
+
+    .hero-lead {
+      font-size: clamp(1rem, 2.5vw, 1.22rem);
+      color: var(--muted);
+      max-width: 66ch;
+      margin-bottom: 26px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: var(--text);
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.45;
+    }
+
+    .hero-side {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .side-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .side-card h3 {
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .side-card p:last-child,
+    .side-card ul:last-child { margin-bottom: 0; }
+
+    .mini-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-list li {
+      padding-left: 18px;
+      position: relative;
+      color: var(--muted);
+    }
+
+    .mini-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-2), var(--white));
+    }
+
+    section {
+      padding: 18px 0;
+    }
+
+    .section-head {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .section-kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      margin-bottom: 0;
+    }
+
+    .section-intro {
+      color: var(--muted);
+      max-width: 78ch;
+      margin-bottom: 0;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      font-size: 1.08rem;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .card p {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .split-panel {
+      display: grid;
+      gap: 16px;
+    }
+
+    .statement {
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .statement p {
+      font-size: clamp(1.05rem, 2vw, 1.2rem);
+      color: var(--text);
+      margin-bottom: 0;
+    }
+
+    .accent-line {
+      width: 72px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent-2), var(--white));
+      margin-bottom: 16px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .timeline-step {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(23,55,145,0.95), rgba(74,123,208,0.85));
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    .timeline-item h3 {
+      margin-bottom: 8px;
+    }
+
+    .timeline-item p {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .quote-block {
+      padding: 26px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(74,123,208,0.18), rgba(255,255,255,0.05));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .quote-block p {
+      font-size: clamp(1.15rem, 2vw, 1.35rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 0;
+    }
+
+    .footer {
+      padding: 28px 0 48px;
+      color: var(--muted);
+    }
+
+    .footer-box {
+      display: grid;
+      gap: 14px;
+      padding: 22px;
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .footer-signature {
+      display: grid;
+      gap: 6px;
+      font-size: 0.95rem;
+    }
+
+    @media (min-width: 768px) {
+      .shell { width: min(100% - 48px, var(--max)); }
+      .nav { display: flex; }
+      .hero { padding-top: 74px; }
+      .hero-grid { grid-template-columns: 1.4fr 0.9fr; }
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .split-panel { grid-template-columns: 1.15fr 0.85fr; }
+    }
+
+    @media (max-width: 767px) {
+      .topbar-inner { padding: 12px 0; }
+      .hero-copy, .hero-side, .card, .statement, .quote-block, .footer-box { padding: 20px; }
+      .timeline-item { grid-template-columns: 52px 1fr; }
+      .timeline-step { width: 52px; height: 52px; border-radius: 16px; }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        color: #111;
+      }
+      .topbar, .hero-actions { display: none !important; }
+      .hero-copy, .hero-side, .card, .statement, .quote-block, .footer-box, .timeline-item {
+        box-shadow: none;
+        background: #fff;
+        color: #111;
+        border-color: #d9d9d9;
+      }
+      .hero-lead, .section-intro, .card p, .metric span, .mini-list li, .footer, .side-card p, .timeline-item p {
+        color: #444 !important;
+      }
+      .brand-chip, .eyebrow { color: #444; border-color: #d9d9d9; background: #f6f6f6; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand-stack">
+        <span class="brand-chip">Pacific Ocean S.A.</span>
+        <span class="brand-chip">Alfa Sky</span>
+      </div>
+      <nav class="nav" aria-label="Secciones">
+        <a href="#contexto">Contexto</a>
+        <a href="#propuesta">Propuesta</a>
+        <a href="#modelo">Modelo</a>
+        <a href="#impacto">Impacto</a>
+        <a href="#cierre">Cierre</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">Anteproyecto de infraestructura estratégica</div>
+          <h1>Desarrollo del Aeródromo de Añelo</h1>
+          <p class="hero-lead">
+            Propuesta para la pavimentación y transformación del Aeródromo de Añelo en una plataforma aeroportuaria de soporte para Vaca Muerta, orientada a fortalecer conectividad, respuesta operativa y capacidad logística regional.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#propuesta">Ver propuesta</a>
+            <a class="btn btn-secondary" href="#cierre">Mesa de trabajo</a>
+          </div>
+          <div class="metric-row">
+            <div class="metric">
+              <strong>Conectividad estratégica</strong>
+              <span>Infraestructura aérea alineada con el crecimiento operativo de una región crítica para el país.</span>
+            </div>
+            <div class="metric">
+              <strong>Capacidad sanitaria</strong>
+              <span>Base apta para traslados programados, derivaciones y respuesta ante situaciones de urgencia.</span>
+            </div>
+            <div class="metric">
+              <strong>Escalabilidad</strong>
+              <span>Esquema de desarrollo por etapas con racional operativo y potencial de expansión progresiva.</span>
+            </div>
+            <div class="metric">
+              <strong>Articulación público-privada</strong>
+              <span>Modelo orientado a inversión, operación y sustentabilidad de largo plazo.</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-side">
+          <div class="side-card">
+            <h3>Impulsado por</h3>
+            <p><strong>Pacific Ocean S.A.</strong> y <strong>Alfa Sky</strong>, desde una lógica de complementariedad entre trayectoria operativa, conectividad aérea aplicada y visión de infraestructura crítica.</p>
+          </div>
+          <div class="side-card">
+            <h3>Foco operativo</h3>
+            <ul class="mini-list">
+              <li>Aviación corporativa y ejecutiva vinculada al ecosistema Oil &amp; Gas</li>
+              <li>Aviación sanitaria con capacidad de traslado y respuesta</li>
+              <li>Servicios aeronáuticos y logísticos complementarios</li>
+            </ul>
+          </div>
+          <div class="side-card">
+            <h3>Objetivo</h3>
+            <p>Consolidar en Añelo un activo aeroportuario con impacto logístico, sanitario y corporativo para acompañar la nueva escala de desarrollo de Vaca Muerta.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="contexto">
+      <div class="shell">
+        <div class="section-head">
+          <span class="section-kicker">Contexto</span>
+          <h2>Una infraestructura para una nueva escala de desarrollo</h2>
+          <p class="section-intro">
+            Añelo se consolidó como uno de los nodos productivos más relevantes de la Argentina. El crecimiento sostenido de Vaca Muerta elevó la exigencia sobre accesibilidad, velocidad de respuesta, logística ejecutiva y soporte sanitario, generando la necesidad de infraestructura complementaria acorde a esa dinámica.
+          </p>
+        </div>
+
+        <div class="split-panel">
+          <div class="statement">
+            <div class="accent-line"></div>
+            <p>
+              En territorios donde la operación productiva tiene alta intensidad, la conectividad aérea deja de ser un servicio accesorio y pasa a ser una herramienta estratégica para mejorar eficiencia, resiliencia operativa y capacidad de respuesta.
+            </p>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <h3>Accesibilidad</h3>
+              <p>Mejora tiempos de traslado para directivos, equipos técnicos, contratistas y operadores estratégicos vinculados al entramado energético regional.</p>
+            </div>
+            <div class="card">
+              <h3>Respuesta crítica</h3>
+              <p>Fortalece capacidades de derivación, traslado y atención de contingencias en una zona con fuerte expansión industrial.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="propuesta">
+      <div class="shell">
+        <div class="section-head">
+          <span class="section-kicker">Propuesta</span>
+          <h2>Transformar el aeródromo en una plataforma aeroportuaria funcional y escalable</h2>
+          <p class="section-intro">
+            El anteproyecto propone la pavimentación y evolución del Aeródromo de Añelo hacia una infraestructura orientada a demanda real, con capacidad de integrarse de manera directa al desarrollo económico, sanitario y corporativo de la región.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h3>Aviación corporativa y ejecutiva</h3>
+            <p>Soporte aéreo para traslados de directivos, personal jerárquico, equipos técnicos, contratistas y operadores vinculados al ecosistema Oil &amp; Gas.</p>
+          </article>
+          <article class="card">
+            <h3>Aviación sanitaria</h3>
+            <p>Plataforma apta para derivaciones, traslados programados y respuesta ante urgencias, con valor crítico para una región de alta actividad.</p>
+          </article>
+          <article class="card">
+            <h3>Servicios de soporte</h3>
+            <p>Desarrollo progresivo de combustible, asistencia en tierra, estacionamiento, hangaraje y facilidades complementarias para la operación aérea.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="quote-block">
+          <p>
+            La visión del proyecto es consolidar en Añelo un <strong>hub aéreo de soporte para Vaca Muerta</strong>, capaz de aportar eficiencia operativa, conectividad estratégica y fortalecimiento sanitario a una región clave para la provincia y para la matriz productiva nacional.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="modelo">
+      <div class="shell">
+        <div class="section-head">
+          <span class="section-kicker">Modelo de desarrollo</span>
+          <h2>Articulación operativa, inversión privada y crecimiento por etapas</h2>
+          <p class="section-intro">
+            El proyecto está concebido bajo un modelo de concesión con inversión privada, orientado a estructurar desarrollo, operación y expansión del activo con racional económico, visión de largo plazo y capacidad de adaptación a la evolución de la demanda.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-step">1</div>
+            <div>
+              <h3>Estructuración del activo</h3>
+              <p>Definición del esquema de desarrollo, encuadre institucional y lineamientos operativos para una implementación ordenada y progresiva.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-step">2</div>
+            <div>
+              <h3>Puesta en valor de la infraestructura</h3>
+              <p>Pavimentación, adecuación funcional y consolidación de capacidades mínimas para soportar operación corporativa, sanitaria y especial.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-step">3</div>
+            <div>
+              <h3>Escalamiento de servicios</h3>
+              <p>Desarrollo incremental de combustible, asistencia en tierra, estacionamiento, hangaraje y servicios complementarios según tracción de demanda.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 16px;">
+          <article class="card">
+            <h3>Pacific Ocean S.A.</h3>
+            <p>Aporta trayectoria operativa, capacidad de ejecución y experiencia en aviación privada, vuelos especiales y servicios de alta exigencia.</p>
+          </article>
+          <article class="card">
+            <h3>Alfa Sky</h3>
+            <p>Se integra como nuevo operador logístico con foco en conectividad aérea aplicada, soporte a industrias estratégicas y fuerte impronta sanitaria.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="section-head">
+          <span class="section-kicker">Sustentabilidad económica</span>
+          <h2>Una estructura de ingresos alineada con la demanda real del territorio</h2>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h3>Ingresos aeronáuticos</h3>
+            <p>Aterrizajes, estacionamiento, uso de infraestructura y servicios operativos vinculados a la actividad aérea.</p>
+          </article>
+          <article class="card">
+            <h3>Ingresos no aeronáuticos</h3>
+            <p>Combustible Jet A1, asistencia en tierra, hangaraje y facilidades complementarias para operadores privados, corporativos y especiales.</p>
+          </article>
+          <article class="card">
+            <h3>Contratos corporativos</h3>
+            <p>Acuerdos B2B con petroleras, operadoras y empresas de servicios como base de recurrencia, volumen y previsibilidad operativa.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="impacto">
+      <div class="shell">
+        <div class="section-head">
+          <span class="section-kicker">Impacto esperado</span>
+          <h2>Un activo logístico, sanitario y corporativo para la Provincia del Neuquén</h2>
+          <p class="section-intro">
+            El desarrollo del Aeródromo de Añelo presenta potencial para generar impacto en múltiples dimensiones del entramado regional, fortaleciendo competitividad, respuesta crítica y capacidad de articulación institucional.
+          </p>
+        </div>
+
+        <div class="grid-4">
+          <article class="card">
+            <h3>Impacto logístico</h3>
+            <p>Mejora accesibilidad y eficiencia operativa en una zona central para el desarrollo energético nacional.</p>
+          </article>
+          <article class="card">
+            <h3>Impacto sanitario</h3>
+            <p>Incorpora una herramienta crítica para traslados, derivaciones y contingencias en un territorio de alta actividad.</p>
+          </article>
+          <article class="card">
+            <h3>Impacto económico</h3>
+            <p>Abre oportunidades para nuevos servicios, atracción de inversión y dinamización del ecosistema local.</p>
+          </article>
+          <article class="card">
+            <h3>Impacto institucional</h3>
+            <p>Habilita una agenda de articulación público-privada en torno a infraestructura estratégica de largo plazo.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="cierre">
+      <div class="shell">
+        <div class="section-head">
+          <span class="section-kicker">Cierre</span>
+          <h2>Una oportunidad concreta para acompañar la expansión de Vaca Muerta</h2>
+        </div>
+
+        <div class="statement">
+          <div class="accent-line"></div>
+          <p>
+            Este anteproyecto propone pensar el Aeródromo de Añelo como una infraestructura de nueva generación al servicio del desarrollo regional, con capacidad de responder a necesidades concretas del territorio y de consolidarse como un activo estratégico para Neuquén.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <div class="footer-box">
+        <strong>Anteproyecto de presentación institucional</strong>
+        <div class="footer-signature">
+          <span>Pacific Ocean S.A. + Alfa Sky</span>
+          <span>Desarrollo del Aeródromo de Añelo</span>
+          <span>Infraestructura estratégica para conectividad, operación y respuesta regional</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
